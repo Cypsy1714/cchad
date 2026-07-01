@@ -43,7 +43,7 @@ def _sort_key(candidate: _Candidate) -> tuple[int, str]:
     return (-candidate.package.priority, candidate.package.id)
 
 
-def _base_ids(catalog: Catalog, config: Config) -> dict[str, str]:
+def base_ids(catalog: Catalog, config: Config) -> dict[str, str]:
     """Return {id: reason} for the base layer, honoring enable/disable."""
     reasons: dict[str, str] = {}
     for package_id in catalog.expand_preset(config.base.preset):
@@ -80,7 +80,7 @@ def resolve(catalog: Catalog, descriptor: StackDescriptor, config: Config) -> Pl
     skips: list[Skip] = []
     candidates: dict[str, _Candidate] = {}
 
-    base = _base_ids(catalog, config)
+    base = base_ids(catalog, config)
     project = _project_ids(catalog, descriptor)
 
     for package_id, reason in {**project, **base}.items():

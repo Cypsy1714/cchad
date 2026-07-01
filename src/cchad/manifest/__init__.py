@@ -12,12 +12,14 @@ from pathlib import Path
 
 import yaml
 
-from cchad.models import Kind, Manifest, ManifestTool, Plan, Scope, Skip
+from cchad.models import Kind, Manifest, ManifestTool, Plan, Scope, Selection, Skip
 
 __all__ = [
     "ManifestError",
     "ManifestDiff",
     "render",
+    "render_doc",
+    "tool_from_selection",
     "parse_manifest",
     "read_manifest",
     "diff_plan",
@@ -42,48 +44,83 @@ class ManifestDiff:
         return bool(self.added or self.removed or self.changed)
 
 
+def tool_from_selection(selection: Selection) -> ManifestTool:
+    return ManifestTool(
+        id=selection.package.id,
+        kind=selection.package.kind,
+        source=selection.package.source,
+        scope=selection.scope,
+        version_pin="latest",
+    )
+
+
 def render(plan: Plan, *, version: str, generated: str) -> str:
     """Render a plan's project layer into a manifest document."""
-    tools = [
-        {
-            "id": selection.package.id,
-            "kind": selection.package.kind.value,
-            "source": selection.package.source,
-            "scope": selection.scope.value,
-            "version_pin": "latest",
-        }
-        for selection in plan.for_scope(Scope.project)
-    ]
+    project = plan.for_scope(Scope.project)
+    return render_doc(
+        version=version,
+        generated=generated,
+        stack=plan.stack.sorted_signals(),
+        tools=[tool_from_selection(s) for s in project],
+        skipped=plan.skips,
+        descriptions={s.package.id: s.package.description for s in project},
+    )
+
+
+def render_doc(
+    *,
+    version: str,
+    generated: str,
+    stack: list[str],
+    tools: list[ManifestTool],
+    skipped: list[Skip],
+    descriptions: dict[str, str] | None = None,
+) -> str:
+    """Render a manifest document from explicit tools (used by add/remove too)."""
     frontmatter = {
         "cchad_version": version,
         "generated": generated,
-        "stack": plan.stack.sorted_signals(),
-        "tools": tools,
-        "skipped": [{"id": skip.id, "reason": skip.reason} for skip in plan.skips],
+        "stack": list(stack),
+        "tools": [
+            {
+                "id": tool.id,
+                "kind": tool.kind.value,
+                "source": tool.source,
+                "scope": tool.scope.value,
+                "version_pin": tool.version_pin,
+            }
+            for tool in tools
+        ],
+        "skipped": [{"id": skip.id, "reason": skip.reason} for skip in skipped],
     }
     front = yaml.safe_dump(frontmatter, sort_keys=False, default_flow_style=False).strip()
-    return f"---\n{front}\n---\n\n{_render_body(plan)}\n"
+    body = _render_body(stack, tools, skipped, descriptions or {})
+    return f"---\n{front}\n---\n\n{body}\n"
 
 
-def _render_body(plan: Plan) -> str:
+def _render_body(
+    stack: list[str],
+    tools: list[ManifestTool],
+    skipped: list[Skip],
+    descriptions: dict[str, str],
+) -> str:
     lines = ["# Claude Code setup for this repo", ""]
-    signals = plan.stack.sorted_signals()
-    if signals:
-        lines += [f"Detected stack: {', '.join(signals)}.", ""]
+    if stack:
+        lines += [f"Detected stack: {', '.join(stack)}.", ""]
 
-    installed = plan.for_scope(Scope.project)
     lines += ["## Installed", ""]
-    if installed:
-        for selection in installed:
-            package = selection.package
-            lines.append(f"- **{package.id}** ({package.kind.value}) — {package.description}")
+    if tools:
+        for tool in tools:
+            description = descriptions.get(tool.id, "")
+            suffix = f" — {description}" if description else ""
+            lines.append(f"- **{tool.id}** ({tool.kind.value}){suffix}")
     else:
         lines.append("- _Nothing project-specific was needed._")
     lines.append("")
 
-    if plan.skips:
+    if skipped:
         lines += ["## Deliberately skipped", ""]
-        for skip in plan.skips:
+        for skip in skipped:
             lines.append(f"- **{skip.id}** — {skip.reason}")
         lines.append("")
 

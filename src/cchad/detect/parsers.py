@@ -181,7 +181,7 @@ def parse_config_files(root: Path, descriptor: StackDescriptor) -> None:
 
 def scan_extensions(root: Path, descriptor: StackDescriptor) -> None:
     scanned = 0
-    for current, dirnames, filenames in os.walk(root):
+    for _dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS and not d.startswith(".")]
         for filename in filenames:
             scanned += 1

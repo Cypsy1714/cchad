@@ -8,10 +8,10 @@ the project layer of that Plan on disk.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 
-class Kind(str, Enum):
+class Kind(StrEnum):
     """What a package fundamentally is."""
 
     mcp = "mcp"
@@ -20,7 +20,7 @@ class Kind(str, Enum):
     claude_md = "claude_md"
 
 
-class InstallMethod(str, Enum):
+class InstallMethod(StrEnum):
     """How a package is written to disk when applied."""
 
     mcp_json = "mcp_json"
@@ -29,7 +29,7 @@ class InstallMethod(str, Enum):
     claude_md_block = "claude_md_block"
 
 
-class Scope(str, Enum):
+class Scope(StrEnum):
     """Where a package lives. Base layer -> user, project layer -> project."""
 
     user = "user"

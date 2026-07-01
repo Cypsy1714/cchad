@@ -14,15 +14,35 @@ from __future__ import annotations
 
 import json
 import shlex
+import shutil
+from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from cchad.data_files import data_path, data_text
-from cchad.models import InstallMethod, Package, Scope, Selection
+from cchad.models import InstallMethod, Kind, ManifestTool, Package, Scope, Selection
 
 from .atomic import Journal
 
-__all__ = ["ApplyError", "ApplyResult", "apply_selections", "mcp_server_entry"]
+__all__ = [
+    "ApplyError",
+    "ApplyResult",
+    "apply_selections",
+    "remove_from_disk",
+    "install_method_for",
+    "mcp_server_entry",
+]
+
+
+def install_method_for(kind: Kind, source: str) -> InstallMethod:
+    """Best-effort install method for a tool known only by kind + source."""
+    if source.startswith("plugin:") or kind == Kind.spine:
+        return InstallMethod.plugin
+    if kind == Kind.claude_md:
+        return InstallMethod.claude_md_block
+    if kind == Kind.skill:
+        return InstallMethod.skill_dir
+    return InstallMethod.mcp_json
 
 
 class ApplyError(Exception):
@@ -101,6 +121,17 @@ def upsert_block(text: str, block_id: str, content: str) -> str:
         return text[:start] + block + text[stop + len(end) :]
     prefix = "" if not text else text.rstrip("\n") + "\n\n"
     return f"{prefix}{block}\n"
+
+
+def remove_block(text: str, block_id: str) -> str:
+    """Remove an id-fenced block if present, leaving the rest intact."""
+    begin, end = _block_markers(block_id)
+    start = text.find(begin)
+    stop = text.find(end)
+    if start == -1 or stop == -1 or stop <= start:
+        return text
+    remaining = (text[:start] + text[stop + len(end) :]).strip()
+    return f"{remaining}\n" if remaining else ""
 
 
 def _claude_md_content(package: Package) -> str:
@@ -203,3 +234,57 @@ def apply_selections(
         result.written.extend(_write_skill(root, selection.package, journal))
 
     return result
+
+
+def remove_from_disk(
+    tools: list[ManifestTool],
+    *,
+    repo_root: Path | None,
+    home: Path,
+    journal: Journal,
+) -> list[str]:
+    """Delete tools from local config (.mcp.json entries, CLAUDE.md blocks, skill dirs)."""
+    removed: list[str] = []
+    by_method: dict[InstallMethod, list[ManifestTool]] = defaultdict(list)
+    for tool in tools:
+        by_method[install_method_for(tool.kind, tool.source)].append(tool)
+
+    mcp_tools = by_method[InstallMethod.mcp_json]
+    for scope in (Scope.project, Scope.user):
+        ids = [t.id for t in mcp_tools if (t.scope or Scope.project) == scope]
+        path = _mcp_json_path(scope, repo_root, home)
+        if not ids or path is None or not path.exists():
+            continue
+        data = _read_json(path)
+        servers = data.get("mcpServers")
+        if isinstance(servers, dict):
+            for package_id in ids:
+                if servers.pop(package_id, None) is not None:
+                    removed.append(package_id)
+            data["mcpServers"] = servers
+            journal.write_text(path, json.dumps(data, indent=2) + "\n")
+
+    for scope in (Scope.project, Scope.user):
+        ids = [
+            t.id
+            for t in by_method[InstallMethod.claude_md_block]
+            if (t.scope or Scope.project) == scope
+        ]
+        path = _claude_md_path(scope, repo_root, home)
+        if not ids or path is None or not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for package_id in ids:
+            if _block_markers(package_id)[0] in text:
+                removed.append(package_id)
+            text = remove_block(text, package_id)
+        journal.write_text(path, text)
+
+    for tool in by_method[InstallMethod.skill_dir]:
+        root = _skills_root(tool.scope or Scope.project, repo_root, home)
+        directory = root / tool.id if root else None
+        if directory and directory.exists():
+            shutil.rmtree(directory)
+            removed.append(tool.id)
+
+    return removed

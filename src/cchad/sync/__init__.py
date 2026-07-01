@@ -10,25 +10,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from cchad.apply import ApplyResult, apply_selections
+from cchad.apply import ApplyResult, apply_selections, install_method_for
 from cchad.apply.atomic import Journal
 from cchad.catalog import Catalog
 from cchad.manifest import read_manifest
-from cchad.models import InstallMethod, Kind, ManifestTool, Package, Scope, Selection
+from cchad.models import ManifestTool, Package, Scope, Selection
 
 
 class SyncError(Exception):
     pass
-
-
-def _install_method_for(tool: ManifestTool) -> InstallMethod:
-    if tool.source.startswith("plugin:") or tool.kind == Kind.spine:
-        return InstallMethod.plugin
-    if tool.kind == Kind.claude_md:
-        return InstallMethod.claude_md_block
-    if tool.kind == Kind.skill:
-        return InstallMethod.skill_dir
-    return InstallMethod.mcp_json
 
 
 def _package_for(tool: ManifestTool, catalog: Catalog) -> Package:
@@ -40,7 +30,7 @@ def _package_for(tool: ManifestTool, catalog: Catalog) -> Package:
         kind=tool.kind,
         name=tool.id,
         source=tool.source,
-        install_method=_install_method_for(tool),
+        install_method=install_method_for(tool.kind, tool.source),
         default_scope=tool.scope,
     )
 
