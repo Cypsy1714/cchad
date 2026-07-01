@@ -1,0 +1,26 @@
+# cchad presets — named bundles of base packages.
+#
+# A preset selects your base layer (the tooling you want across all projects).
+# Pick one in ~/.config/cchad/config.toml under [base].preset, then fine-tune
+# with [base].enable / [base].disable. "recommended" is the default.
+
+presets:
+  minimal:
+    - context7
+    - github-mcp
+    - karpathy-claude-md
+
+  recommended:
+    - context7
+    - github-mcp
+    - chrome-devtools-mcp
+    - superpowers
+    - karpathy-claude-md
+
+  full:
+    - context7
+    - github-mcp
+    - chrome-devtools-mcp
+    - superpowers
+    - karpathy-claude-md
+    - sequential-thinking

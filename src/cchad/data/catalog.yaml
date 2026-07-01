@@ -1,0 +1,162 @@
+# cchad catalog — the master list of every package cchad knows about.
+#
+# This file is DATA, not code. To add a package, add an entry below. Teams can
+# extend or override this list with their own YAML via `[catalog].sources` in
+# ~/.config/cchad/config.toml (user entries override shipped ones by `id`).
+#
+# Fields
+#   id              unique slug (kebab-case)                              [required]
+#   kind            mcp | skill | spine | claude_md                      [required]
+#   name            human-readable name                                  [required]
+#   description     one line; the "why"                                  [required]
+#   source          how to fetch/run it (see note below)
+#   install_method  mcp_json | plugin | skill_dir | claude_md_block
+#   category        free tag; a few are policy-bearing: "browser", "workflow"
+#   default         part of the "recommended" defaults
+#   default_scope   user | project  (user -> base layer, project -> per-repo)
+#   conflicts_with  list of ids that cannot coexist with this one
+#   priority        higher wins when deconflicting / capping (default 0)
+#
+# source formats
+#   "npx -y pkg…"           a stdio command line (first token = command, rest = args)
+#   "https://…"             a remote HTTP MCP server
+#   "plugin:name@market"    a Claude Code plugin (install_method: plugin)
+#   "bundled:<id>"          content ships inside cchad (skills / claude_md blocks)
+#   "github:owner/repo"     provenance reference for externally sourced content
+
+packages:
+  # ---- Base / cross-project tooling -------------------------------------------
+  - id: context7
+    kind: mcp
+    name: Context7
+    description: Version-pinned library docs; kills API hallucinations.
+    source: "npx -y @upstash/context7-mcp"
+    install_method: mcp_json
+    category: docs
+    default: true
+    default_scope: project
+    priority: 80
+
+  - id: github-mcp
+    kind: mcp
+    name: GitHub MCP
+    description: PRs, issues, Actions, and code search from Claude Code (needs GITHUB_PERSONAL_ACCESS_TOKEN).
+    source: "npx -y @modelcontextprotocol/server-github"
+    install_method: mcp_json
+    category: vcs
+    default: true
+    default_scope: user
+    priority: 70
+
+  - id: chrome-devtools-mcp
+    kind: mcp
+    name: Chrome DevTools MCP
+    description: Console, network, performance traces, and Core Web Vitals.
+    source: "npx -y chrome-devtools-mcp@latest"
+    install_method: mcp_json
+    category: browser          # only one 'browser' package may be active
+    default: true
+    default_scope: user
+    priority: 60
+
+  - id: playwright-mcp
+    kind: mcp
+    name: Playwright MCP
+    description: Cross-browser automation and end-to-end testing.
+    source: "npx -y @playwright/mcp@latest"
+    install_method: mcp_json
+    category: browser
+    default: false
+    default_scope: user
+    conflicts_with: [chrome-devtools-mcp]
+    priority: 55
+
+  - id: sequential-thinking
+    kind: mcp
+    name: Sequential Thinking
+    description: Structured step-by-step reasoning scratchpad for hard problems.
+    source: "npx -y @modelcontextprotocol/server-sequential-thinking"
+    install_method: mcp_json
+    category: reasoning
+    default: false
+    default_scope: user
+    priority: 30
+
+  - id: superpowers
+    kind: spine
+    name: Superpowers
+    description: Brainstorm -> plan -> TDD -> review workflow framework.
+    source: "plugin:superpowers@claude-plugins-official"
+    install_method: plugin
+    category: workflow         # only one 'workflow' spine may be active
+    default: true
+    default_scope: user
+    priority: 90
+
+  - id: karpathy-claude-md
+    kind: claude_md
+    name: Karpathy guidelines
+    description: Think-before-coding, simplicity, and surgical-changes CLAUDE.md block.
+    source: "bundled:karpathy-claude-md"
+    install_method: claude_md_block
+    category: behavior
+    default: true
+    default_scope: user
+    priority: 100
+
+  # ---- Databases (project layer, matched by rules) ----------------------------
+  - id: mongodb-mcp
+    kind: mcp
+    name: MongoDB MCP
+    description: Schema-aware MongoDB access — query, aggregate, and inspect collections.
+    source: "npx -y mongodb-mcp-server"
+    install_method: mcp_json
+    category: database
+    default: false
+    default_scope: project
+    priority: 50
+
+  - id: postgres-mcp
+    kind: mcp
+    name: Postgres MCP
+    description: Read-only Postgres access — inspect schema and run queries.
+    source: "npx -y @modelcontextprotocol/server-postgres"
+    install_method: mcp_json
+    category: database
+    default: false
+    default_scope: project
+    priority: 50
+
+  # ---- Skills (project layer, matched by rules) -------------------------------
+  - id: react-patterns-skill
+    kind: skill
+    name: React patterns
+    description: Idiomatic React — hooks, composition, and state boundaries.
+    source: "bundled:react-patterns-skill"
+    install_method: skill_dir
+    category: frontend
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: fastapi-skill
+    kind: skill
+    name: FastAPI conventions
+    description: FastAPI routing, dependency injection, and async patterns.
+    source: "bundled:fastapi-skill"
+    install_method: skill_dir
+    category: backend
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: remotion-skill
+    kind: skill
+    name: Remotion conventions
+    description: Programmatic video with Remotion — compositions, timing, and rendering.
+    source: "bundled:remotion-skill"
+    install_method: skill_dir
+    category: media
+    default: false
+    default_scope: project
+    priority: 40

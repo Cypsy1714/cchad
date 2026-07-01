@@ -1,0 +1,23 @@
+# cchad rules — map a detected stack to recommended packages (the project layer).
+#
+# A rule fires when EVERY signal in `when` is present in the detected stack.
+# When it fires, every id in `recommend` becomes a project-layer candidate.
+# Candidates still pass through deconfliction before they are installed.
+#
+# Signals come from the detector (languages, frameworks, databases, etc.).
+
+rules:
+  - when: [mongodb]
+    recommend: [mongodb-mcp]
+
+  - when: [postgres]
+    recommend: [postgres-mcp]
+
+  - when: [react]
+    recommend: [react-patterns-skill]
+
+  - when: [fastapi]
+    recommend: [fastapi-skill]
+
+  - when: [remotion]
+    recommend: [remotion-skill]
