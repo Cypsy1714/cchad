@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-07-01
+
+### Added
+- **Baseline skills** matched by rules: language conventions for TypeScript,
+  JavaScript, Python, and Go, plus framework skills for Next.js, Vue, Svelte,
+  Tailwind, Express, Django, and Flask. (React, FastAPI, and Remotion shipped in 0.1.0.)
+- Optional **`unless`** guard on rules, so the JavaScript skill is skipped on
+  TypeScript repos.
+
 ## [0.1.0] - 2026-07-01
 
 Initial release.
@@ -16,10 +25,7 @@ Initial release.
   framework configs, and a file-extension histogram.
 - **Curated catalog** of MCP servers, skills, a workflow spine, and a CLAUDE.md
   behavior block, defined entirely as data, with presets (`minimal`, `recommended`,
-  `full`) and stack rules (with optional `unless` guards).
-- **Baseline skills** matched by rules: language conventions for TypeScript,
-  JavaScript, Python, and Go, plus framework skills for React, Next.js, Vue, Svelte,
-  Tailwind, Express, FastAPI, Django, Flask, and Remotion.
+  `full`) and stack rules.
 - **Deconfliction resolver**: one workflow spine, one browser MCP, explicit conflict
   handling, and an MCP-server cap — deterministic, with a reason for every drop.
 - **Two-layer model**: a base layer applied to your user scope and a project layer
@@ -32,5 +38,6 @@ Initial release.
 - **Extensibility** via `[catalog].sources` (local or `github:` YAML), merged over
   the shipped catalog.
 
-[Unreleased]: https://github.com/Cypsy1714/cchad/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Cypsy1714/cchad/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/Cypsy1714/cchad/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Cypsy1714/cchad/releases/tag/v0.1.0

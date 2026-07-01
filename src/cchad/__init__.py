@@ -5,4 +5,4 @@ servers and skills — recording every choice in a committed manifest so the who
 team gets an identical Claude Code environment with one command.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"

@@ -10,6 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verify tag matches package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(grep -oE '__version__ = "[^"]+"' src/cchad/__init__.py | cut -d'"' -f2)"
+          echo "tag=$tag version=$version"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package version $version. Bump src/cchad/__init__.py before tagging."
+            exit 1
+          fi
+
       - name: Install uv
         uses: astral-sh/setup-uv@v5
 

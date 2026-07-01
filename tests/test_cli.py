@@ -4,6 +4,7 @@ import json
 
 from typer.testing import CliRunner
 
+from cchad import __version__
 from cchad.cli import app
 
 runner = CliRunner()
@@ -20,7 +21,7 @@ def _repo(tmp_path, monkeypatch, **deps):
 def test_version():
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
-    assert "0.1.0" in result.output
+    assert __version__ in result.output
 
 
 def test_plan_json(isolated_home, tmp_path, monkeypatch):

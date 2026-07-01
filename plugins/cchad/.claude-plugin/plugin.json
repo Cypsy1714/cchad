@@ -1,7 +1,7 @@
 {
   "name": "cchad",
   "displayName": "cchad",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Detect a repo's stack and configure Claude Code (MCP servers + skills), recorded in a committed manifest.",
   "author": {
     "name": "Cypsy1714"
