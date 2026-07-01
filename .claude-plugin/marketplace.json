@@ -1,0 +1,15 @@
+{
+  "name": "cchad",
+  "owner": {
+    "name": "Cypsy1714",
+    "email": "70166815+Cypsy1714@users.noreply.github.com"
+  },
+  "description": "cchad — a package manager and lockfile for your Claude Code setup.",
+  "plugins": [
+    {
+      "name": "cchad",
+      "source": "./plugins/cchad",
+      "description": "Detect a repo's stack and configure Claude Code (MCP servers + skills), recorded in a committed manifest."
+    }
+  ]
+}

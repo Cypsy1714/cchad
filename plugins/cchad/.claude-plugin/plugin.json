@@ -1,0 +1,13 @@
+{
+  "name": "cchad",
+  "displayName": "cchad",
+  "version": "0.1.0",
+  "description": "Detect a repo's stack and configure Claude Code (MCP servers + skills), recorded in a committed manifest.",
+  "author": {
+    "name": "Cypsy1714"
+  },
+  "homepage": "https://github.com/Cypsy1714/cchad",
+  "repository": "https://github.com/Cypsy1714/cchad",
+  "license": "MIT",
+  "keywords": ["claude-code", "mcp", "package-manager", "developer-tools"]
+}
