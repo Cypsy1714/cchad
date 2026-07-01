@@ -52,7 +52,9 @@ presets:
 
 ## Rules (`rules.yaml`)
 
-A rule fires when **every** signal in `when` is present in the detected stack.
+A rule fires when **every** signal in `when` is present in the detected stack. An
+optional `unless` list vetoes the rule when any of its signals are present — handy
+when one signal implies another.
 
 ```yaml
 rules:
@@ -60,6 +62,9 @@ rules:
     recommend: [mongodb-mcp]
   - when: [react]
     recommend: [react-patterns-skill]
+  - when: [javascript]
+    unless: [typescript]        # a TypeScript repo gets the TypeScript skill instead
+    recommend: [javascript-skill]
 ```
 
 ## Shipped packages
@@ -78,6 +83,21 @@ rules:
 | `react-patterns-skill` | skill | project | frontend |
 | `fastapi-skill` | skill | project | backend |
 | `remotion-skill` | skill | project | media |
+| `typescript-skill` | skill | project | language |
+| `javascript-skill` | skill | project | language |
+| `python-skill` | skill | project | language |
+| `go-skill` | skill | project | language |
+| `nextjs-skill` | skill | project | frontend |
+| `vue-skill` | skill | project | frontend |
+| `svelte-skill` | skill | project | frontend |
+| `tailwind-skill` | skill | project | frontend |
+| `express-skill` | skill | project | backend |
+| `django-skill` | skill | project | backend |
+| `flask-skill` | skill | project | backend |
+
+Language and framework skills are matched by rules on the detected stack — e.g. a
+Python + FastAPI repo gets `python-skill` and `fastapi-skill`, a TypeScript + React
+repo gets `typescript-skill` and `react-patterns-skill`.
 
 Some MCP servers need credentials (for example, `github-mcp` reads
 `GITHUB_PERSONAL_ACCESS_TOKEN`). cchad never writes secrets — set them as environment

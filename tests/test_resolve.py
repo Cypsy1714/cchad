@@ -87,3 +87,18 @@ def test_resolution_is_deterministic(catalog):
     first = [s.package.id for s in resolve(catalog, stack, Config()).selections]
     second = [s.package.id for s in resolve(catalog, stack, Config()).selections]
     assert first == second
+
+
+def test_language_skills_fire(catalog):
+    stack = StackDescriptor(languages={"python", "go"})
+    plan = resolve(catalog, stack, Config(base=BaseConfig(preset="minimal")))
+    assert {"python-skill", "go-skill"} <= _ids(plan)
+
+
+def test_javascript_skill_suppressed_by_typescript(catalog):
+    minimal = Config(base=BaseConfig(preset="minimal"))
+    ts = resolve(catalog, StackDescriptor(languages={"javascript", "typescript"}), minimal)
+    js = resolve(catalog, StackDescriptor(languages={"javascript"}), minimal)
+    assert "typescript-skill" in _ids(ts)
+    assert "javascript-skill" not in _ids(ts)  # unless: [typescript]
+    assert "javascript-skill" in _ids(js)

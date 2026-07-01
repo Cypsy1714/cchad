@@ -16,7 +16,10 @@ Initial release.
   framework configs, and a file-extension histogram.
 - **Curated catalog** of MCP servers, skills, a workflow spine, and a CLAUDE.md
   behavior block, defined entirely as data, with presets (`minimal`, `recommended`,
-  `full`) and stack rules.
+  `full`) and stack rules (with optional `unless` guards).
+- **Baseline skills** matched by rules: language conventions for TypeScript,
+  JavaScript, Python, and Go, plus framework skills for React, Next.js, Vue, Svelte,
+  Tailwind, Express, FastAPI, Django, Flask, and Remotion.
 - **Deconfliction resolver**: one workflow spine, one browser MCP, explicit conflict
   handling, and an MCP-server cap — deterministic, with a reason for every drop.
 - **Two-layer model**: a base layer applied to your user scope and a project layer

@@ -1,23 +1,61 @@
 # cchad rules — map a detected stack to recommended packages (the project layer).
 #
-# A rule fires when EVERY signal in `when` is present in the detected stack.
-# When it fires, every id in `recommend` becomes a project-layer candidate.
-# Candidates still pass through deconfliction before they are installed.
+# A rule fires when EVERY signal in `when` is present in the detected stack, and
+# NO signal in the optional `unless` list is present. When it fires, every id in
+# `recommend` becomes a project-layer candidate. Candidates still pass through
+# deconfliction before they are installed.
 #
 # Signals come from the detector (languages, frameworks, databases, etc.).
 
 rules:
+  # Databases -> MCP servers
   - when: [mongodb]
     recommend: [mongodb-mcp]
 
   - when: [postgres]
     recommend: [postgres-mcp]
 
+  # Languages -> convention skills
+  - when: [typescript]
+    recommend: [typescript-skill]
+
+  - when: [javascript]
+    unless: [typescript]        # a TS project already gets the TypeScript skill
+    recommend: [javascript-skill]
+
+  - when: [python]
+    recommend: [python-skill]
+
+  - when: [go]
+    recommend: [go-skill]
+
+  # Frameworks -> convention skills
   - when: [react]
     recommend: [react-patterns-skill]
 
+  - when: [next]
+    recommend: [nextjs-skill]
+
+  - when: [vue]
+    recommend: [vue-skill]
+
+  - when: [svelte]
+    recommend: [svelte-skill]
+
+  - when: [tailwind]
+    recommend: [tailwind-skill]
+
+  - when: [express]
+    recommend: [express-skill]
+
   - when: [fastapi]
     recommend: [fastapi-skill]
+
+  - when: [django]
+    recommend: [django-skill]
+
+  - when: [flask]
+    recommend: [flask-skill]
 
   - when: [remotion]
     recommend: [remotion-skill]

@@ -18,6 +18,17 @@ def test_rule_matches_requires_all_signals():
     assert not rule.matches({"react"})
 
 
+def test_rule_unless_vetoes_match():
+    rule = Rule(when=("javascript",), recommend=("x",), unless=("typescript",))
+    assert rule.matches({"javascript"})
+    assert not rule.matches({"javascript", "typescript"})
+
+
+def test_language_skills_are_in_catalog(catalog):
+    for skill_id in ("typescript-skill", "python-skill", "go-skill", "tailwind-skill"):
+        assert catalog.get(skill_id) is not None
+
+
 def test_user_source_overrides_by_id(tmp_path):
     override = tmp_path / "extra.yaml"
     override.write_text(

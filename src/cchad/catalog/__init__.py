@@ -29,12 +29,19 @@ def _default_warn(message: str) -> None:
 
 @dataclass(frozen=True)
 class Rule:
-    """A stack-detection mapping: when these signals appear, recommend these ids."""
+    """A stack-detection mapping: when these signals appear, recommend these ids.
+
+    ``unless`` signals veto the rule — e.g. recommend a JavaScript skill only
+    ``when: [javascript]`` and ``unless: [typescript]``.
+    """
 
     when: tuple[str, ...]
     recommend: tuple[str, ...]
+    unless: tuple[str, ...] = ()
 
     def matches(self, signals: set[str]) -> bool:
+        if any(signal in signals for signal in self.unless):
+            return False
         return all(signal in signals for signal in self.when)
 
 
@@ -95,7 +102,11 @@ def _apply_document(
     for raw in doc.get("rules", []) or []:
         try:
             rules.append(
-                Rule(when=tuple(raw["when"]), recommend=tuple(raw["recommend"]))
+                Rule(
+                    when=tuple(raw["when"]),
+                    recommend=tuple(raw["recommend"]),
+                    unless=tuple(raw.get("unless", []) or []),
+                )
             )
         except (KeyError, TypeError) as exc:
             warn(f"{origin}: skipping invalid rule ({exc})")

@@ -50,7 +50,8 @@ presets:
 - Sources are applied **after** the shipped catalog, in the order listed.
 - **Packages** and **presets** override earlier ones by `id` / name — so you can
   redefine `context7` to use a different source, or add a `team` preset.
-- **Rules** are appended.
+- **Rules** are appended. A rule may include an optional `unless: [...]` list that
+  vetoes it when any of those signals are present.
 
 ### `github:` source format
 

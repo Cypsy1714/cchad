@@ -160,3 +160,126 @@ packages:
     default: false
     default_scope: project
     priority: 40
+
+  # ---- Language skills (project layer, matched by rules) ----------------------
+  - id: typescript-skill
+    kind: skill
+    name: TypeScript conventions
+    description: Idiomatic, type-safe TypeScript — strictness, unions, and narrowing.
+    source: "bundled:typescript-skill"
+    install_method: skill_dir
+    category: language
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: javascript-skill
+    kind: skill
+    name: JavaScript conventions
+    description: Modern, readable JavaScript — const/let, async/await, and ES modules.
+    source: "bundled:javascript-skill"
+    install_method: skill_dir
+    category: language
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: python-skill
+    kind: skill
+    name: Python conventions
+    description: Idiomatic Python — type hints, dataclasses, and clean structure.
+    source: "bundled:python-skill"
+    install_method: skill_dir
+    category: language
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: go-skill
+    kind: skill
+    name: Go conventions
+    description: Idiomatic Go — error wrapping, small interfaces, and safe concurrency.
+    source: "bundled:go-skill"
+    install_method: skill_dir
+    category: language
+    default: false
+    default_scope: project
+    priority: 40
+
+  # ---- Framework skills (project layer, matched by rules) ---------------------
+  - id: nextjs-skill
+    kind: skill
+    name: Next.js conventions
+    description: Next.js App Router — server/client components and data fetching.
+    source: "bundled:nextjs-skill"
+    install_method: skill_dir
+    category: frontend
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: vue-skill
+    kind: skill
+    name: Vue conventions
+    description: Vue 3 Composition API — reactivity, composables, and computed state.
+    source: "bundled:vue-skill"
+    install_method: skill_dir
+    category: frontend
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: svelte-skill
+    kind: skill
+    name: Svelte conventions
+    description: Svelte and SvelteKit — reactivity, stores, and load functions.
+    source: "bundled:svelte-skill"
+    install_method: skill_dir
+    category: frontend
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: express-skill
+    kind: skill
+    name: Express conventions
+    description: Express APIs — routers, middleware order, and async error handling.
+    source: "bundled:express-skill"
+    install_method: skill_dir
+    category: backend
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: django-skill
+    kind: skill
+    name: Django conventions
+    description: Django — app structure, ORM query optimization, and DRF.
+    source: "bundled:django-skill"
+    install_method: skill_dir
+    category: backend
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: flask-skill
+    kind: skill
+    name: Flask conventions
+    description: Flask — app factory, blueprints, and validated requests.
+    source: "bundled:flask-skill"
+    install_method: skill_dir
+    category: backend
+    default: false
+    default_scope: project
+    priority: 40
+
+  - id: tailwind-skill
+    kind: skill
+    name: Tailwind conventions
+    description: Tailwind CSS — utility-first, design tokens, and responsive variants.
+    source: "bundled:tailwind-skill"
+    install_method: skill_dir
+    category: frontend
+    default: false
+    default_scope: project
+    priority: 40
